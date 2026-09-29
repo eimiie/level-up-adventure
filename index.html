@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#4f46e5">
+<link rel="manifest" href="manifest.json">
+<title>Level Up Adventure</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",system-ui,sans-serif;background:#eef5ff;color:#172033}
+.app{max-width:520px;margin:auto;min-height:100vh;padding-bottom:86px}
+header{padding:18px 18px 8px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:900;font-size:23px;color:#4338ca}.coins{background:#fff;padding:9px 13px;border-radius:22px;font-weight:800;box-shadow:0 3px 12px #0001}
+.page{display:none;padding:10px 16px}.page.active{display:block}
+.hero{border-radius:30px;padding:18px;background:linear-gradient(145deg,#42a5f5,#7c4dff);color:white;text-align:center;box-shadow:0 10px 25px #4f46e155}
+.avatar{height:265px;display:flex;align-items:center;justify-content:center;position:relative}
+.avatarCircle{width:190px;height:190px;border-radius:50%;background:#ffffff22;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.hair{font-size:40px;line-height:36px}.face{font-size:67px;line-height:65px}.outfit{font-size:62px;line-height:62px}
+.gear{font-size:25px;min-height:34px}.name{font-size:25px;font-weight:900}.sub{opacity:.9}
+.xpbox{background:#fff;border-radius:20px;padding:14px;margin-top:15px;color:#172033}
+.xprow{display:flex;justify-content:space-between;font-weight:800}.bar{height:12px;background:#e5e7eb;border-radius:10px;overflow:hidden;margin-top:8px}.fill{height:100%;background:linear-gradient(90deg,#facc15,#fb923c);border-radius:10px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}.stat{background:white;border-radius:18px;padding:13px;text-align:center;box-shadow:0 4px 14px #0000000d}.stat b{display:block;font-size:20px}.card{background:#fff;border-radius:20px;padding:15px;margin:10px 0;box-shadow:0 4px 14px #0000000d}
+h2{margin:8px 0 14px;font-size:23px}.mission{display:flex;align-items:center;gap:12px}.mission .emoji{font-size:28px}.missionText{flex:1}.missionText b{display:block}.reward{font-size:12px;color:#667085;margin-top:3px}
+button{border:0;border-radius:13px;padding:10px 14px;font-weight:800;background:#4f46e5;color:white;font-size:14px}button:disabled{background:#d1d5db;color:#6b7280}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.item{text-align:center;background:#fff;border-radius:20px;padding:15px}.itemEmoji{font-size:55px;height:65px}.price{font-size:12px;color:#667085;margin:4px}.pill{display:inline-block;padding:5px 9px;border-radius:20px;background:#eef2ff;color:#4338ca;font-size:11px;font-weight:800}
+.choices{display:flex;gap:7px;overflow:auto;padding-bottom:4px}.choice{white-space:nowrap;background:#f1f3f5;color:#333}.choice.selected{background:#4f46e5;color:#fff}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #ddd;display:flex;justify-content:center;z-index:5}.navin{max-width:520px;width:100%;display:grid;grid-template-columns:repeat(4,1fr)}.nav button{background:transparent;color:#667085;border-radius:0;padding:10px 3px;font-size:11px}.nav button.active{color:#4338ca}.nav span{display:block;font-size:22px}
+.notice{background:#fff7d6;border-radius:16px;padding:12px;font-size:13px;margin:12px 0}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="logo">🌟 Level Up Adventure</div><div class="coins">🪙 <span id="coins">100</span></div></header>
+
+<section id="home" class="page active">
+<div class="hero"><div class="avatar" id="avatar"></div><div class="name" id="heroName">My Hero</div><div class="sub">Level <span id="level">1</span> Adventure Hero</div></div>
+<div class="xpbox"><div class="xprow"><span>⭐ Level <span id="level2">1</span></span><span id="xpText">0 / 100 XP</span></div><div class="bar"><div class="fill" id="xpFill" style="width:0%"></div></div></div>
+<div class="stats"><div class="stat">🪙<b id="coins2">100</b>Coins</div><div class="stat">⭐<b id="level3">1</b>Level</div><div class="stat">🏆<b id="doneCount">0</b>Today</div></div>
+<div class="card"><h2>Today's Missions</h2><div id="homeMissions"></div></div>
+</section>
+
+<section id="avatarPage" class="page">
+<h2>🧑‍🚀 Customize My Hero</h2><div class="hero"><div class="avatar" id="avatar2"></div><div class="name" id="heroName2">My Hero</div></div>
+<div class="card"><b>Hero Name</b><div style="display:flex;gap:8px;margin-top:9px"><input id="nameInput" style="flex:1;padding:12px;border:1px solid #ddd;border-radius:12px" placeholder="Hero name"><button onclick="saveName()">Save</button></div></div>
+<div class="card"><b>Hair</b><div class="choices" id="hairChoices"></div></div>
+<div class="card"><b>Skin Tone</b><div class="choices" id="skinChoices"></div></div>
+<div class="card"><b>Outfit</b><div class="choices" id="outfitChoices"></div></div>
+<div class="card"><b>Expression</b><div class="choices" id="eyeChoices"></div></div>
+</section>
+
+<section id="missions" class="page"><h2>🎯 Real-Life Missions</h2><div class="notice">Do something awesome in real life, then claim the XP and coins here!</div><div id="missionList"></div></section>
+
+<section id="shop" class="page"><h2>🛍️ Adventure Shop</h2><div class="notice">Earn coins from missions and spend them on hero gear.</div><div class="grid" id="shopGrid"></div></section>
+
+<div class="nav"><div class="navin">
+<button onclick="show('home')" id="n-home" class="active"><span>🏠</span>Hero</button>
+<button onclick="show('avatarPage')" id="n-avatarPage"><span>🧑</span>Avatar</button>
+<button onclick="show('missions')" id="n-missions"><span>🎯</span>Missions</button>
+<button onclick="show('shop')" id="n-shop"><span>🛍️</span>Shop</button>
+</div></div>
+</div>
+<script>
+const defaultState={name:"My Hero",coins:100,xp:0,level:1,done:[],owned:[],equipped:{},hair:"Spiky",skin:"Medium",outfit:"Explorer",eyes:"Happy"};
+let state=JSON.parse(localStorage.getItem("levelupState")||"null")||defaultState;
+const tasks=[
+{id:1,e:"🪥",title:"Brush teeth",xp:10,c:5},{id:2,e:"📚",title:"Read for 15 minutes",xp:20,c:10},
+{id:3,e:"🧱",title:"Build something",xp:25,c:15},{id:4,e:"⭐",title:"Help at home",xp:20,c:10},{id:5,e:"🦸",title:"Try something brave",xp:30,c:20}
+];
+const items=[
+{id:1,n:"Red Cap",p:40,e:"🧢",cat:"hat"},{id:2,n:"Cool Glasses",p:60,e:"😎",cat:"face"},
+{id:3,n:"Blue Hoodie",p:100,e:"👕",cat:"shirt"},{id:4,n:"Super Cape",p:150,e:"🦸",cat:"back"},
+{id:5,n:"Robot Buddy",p:200,e:"🤖",cat:"pet"},{id:6,n:"Dino Buddy",p:250,e:"🦖",cat:"pet"},
+{id:7,n:"Golden Crown",p:300,e:"👑",cat:"hat"},{id:8,n:"Star Wand",p:120,e:"🪄",cat:"hand"}
+];
+function save(){localStorage.setItem("levelupState",JSON.stringify(state));render()}
+function need(){return 100+(state.level-1)*50}
+function complete(id){if(state.done.includes(id))return;let t=tasks.find(x=>x.id===id);state.done.push(id);state.coins+=t.c;state.xp+=t.xp;while(state.xp>=need()){state.xp-=need();state.level++;state.coins+=25;alert("🎉 LEVEL UP! You reached Level "+state.level+" and earned 25 bonus coins!")}save()}
+function buy(id){let x=items.find(i=>i.id===id);if(state.owned.includes(id))return;if(state.coins<x.p)return;state.coins-=x.p;state.owned.push(id);state.equipped[x.cat]=id;save()}
+function equip(id){let x=items.find(i=>i.id===id);if(!state.owned.includes(id))return;state.equipped[x.cat]=id;save()}
+function eq(cat){let id=state.equipped[cat],x=items.find(i=>i.id===id);return x?x.e:""}
+function avatarHTML(){
+let hair={Spiky:"💈",Curly:"🦱",Long:"💇",Smooth:"👱"}[state.hair]||"💈";
+let face={Light:"👦🏻",Medium:"👦🏼",Tan:"👦🏽",Dark:"👦🏿"}[state.skin]||"👦🏼";
+if(state.eyes==="Wink") face+="😉";
+let outfit={Explorer:"🧑‍🚀",Ninja:"🥷",Astronaut:"🧑‍🚀",Builder:"👷",Superhero:"🦸"}[state.outfit]||"🧑‍🚀";
+return `<div class="avatarCircle"><div class="gear">${eq("hat")}</div><div class="hair">${hair}</div><div class="face">${face}</div><div class="outfit">${outfit}</div><div class="gear">${eq("face")} ${eq("back")} ${eq("hand")} ${eq("pet")}</div></div>`;
+}
+function render(){
+document.getElementById("coins").textContent=state.coins;document.getElementById("coins2").textContent=state.coins;
+["level","level2","level3"].forEach(id=>document.getElementById(id).textContent=state.level);
+document.getElementById("heroName").textContent=state.name;document.getElementById("heroName2").textContent=state.name;
+document.getElementById("xpText").textContent=`${state.xp} / ${need()} XP`;document.getElementById("xpFill").style.width=Math.min(100,state.xp/need()*100)+"%";
+document.getElementById("doneCount").textContent=state.done.length;
+document.getElementById("avatar").innerHTML=avatarHTML();document.getElementById("avatar2").innerHTML=avatarHTML();
+document.getElementById("nameInput").value=state.name;
+renderMissions("missionList",false);renderMissions("homeMissions",true);renderShop();renderChoices();
+}
+function renderMissions(el,compact){
+document.getElementById(el).innerHTML=tasks.map(t=>{let done=state.done.includes(t.id);return `<div class="card"><div class="mission"><div class="emoji">${t.e}</div><div class="missionText"><b>${t.title}</b><div class="reward">+${t.xp} XP • +${t.c} coins</div></div><button ${done?"disabled":""} onclick="complete(${t.id})">${done?"✓ Done":"Claim"}</button></div></div>`}).join("");
+}
+function renderShop(){
+document.getElementById("shopGrid").innerHTML=items.map(x=>{let owned=state.owned.includes(x.id),equipped=state.equipped[x.cat]===x.id;return `<div class="item"><div class="itemEmoji">${x.e}</div><b>${x.n}</b><div class="price">${x.p} 🪙</div><button ${(!owned&&state.coins<x.p)||equipped?"disabled":""} onclick="${owned?`equip(${x.id})`:`buy(${x.id})`}">${equipped?"Equipped ✓":owned?"Equip":"Buy"}</button></div>`}).join("");
+}
+function renderChoices(){
+let groups={hair:["Spiky","Curly","Long","Smooth"],skin:["Light","Medium","Tan","Dark"],outfit:["Explorer","Ninja","Astronaut","Builder","Superhero"],eyes:["Happy","Wink"]};
+for(let [key,arr] of Object.entries(groups)){let el=document.getElementById(key==="eyes"?"eyeChoices":key+"Choices");let val=state[key==="eyes"?"eyes":key];el.innerHTML=arr.map(x=>`<button class="choice ${val===x?"selected":""}" onclick="choose('${key}','${x}')">${x}</button>`).join("")}
+}
+function choose(k,v){let prop=k==="eyes"?"eyes":k;state[prop]=v;save()}
+function saveName(){let v=document.getElementById("nameInput").value.trim();if(v){state.name=v;save()}}
+function show(id){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));document.getElementById("n-"+id).classList.add("active");window.scrollTo(0,0)}
+render();
+if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body></html>
